@@ -15,9 +15,16 @@ Controller.prototype = {
   },
 
   bindListeners: function(){
-    //$('#contact-form').submit(sendMail);
+    $('#contact-form').submit(this.sendMail);
     $('#contact-link').on('click', view.contactIn);
     $('#close').on('click', view.contactOut);
+  },
+
+  sendMail: function(e){
+    e.preventDefault();
+    console.log("SendMail function activated")
+    var formData = view.getFormData();
+    debugger
   }
 }
 
@@ -26,7 +33,8 @@ function Model(){
   this.i=0;
 }
 
-Model.prototype = {}
+Model.prototype = {
+}
 
 function View(){}
 
@@ -37,6 +45,21 @@ View.prototype = {
 
   contactOut: function(){
     $("#contact-container").fadeOut()
+  },
+
+  getFormData: function(){
+    var formRaw=$('form').serializeArray();
+
+    var formData = {
+      name:formRaw[0].value,
+      from_email:formRaw[1].value,
+      html:"<p>"+formRaw[2].value+"</p>",
+      text:formRaw[2].value,
+      subject:"Nuevo contacto: "+formRaw[1].value,
+      to:[{email:"alosada@gmail.com"}]
+    };
+
+    return formData
   }
 
 }
