@@ -1,0 +1,38 @@
+@font-face {
+  font-family: penna;
+  src: url(penna.otf);
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: #ffffff;
+  margin: 0;
+  font-family: penna; Helvetica, sans-serif;;
+  overflow: hidden;
+  font-size: 2em;
+}
+
+a {
+  color: #000000;
+  text-decoration: none;
+  color: black;
+}
+
+a:hover{
+  color: red;
+}
+
+a:visited{
+}
+
+span#main {
+  text-align: center;
+  margin: auto;
+  position: absolute;
+  top: 15%;
+  right: 0;
+  left: 0;
+}
