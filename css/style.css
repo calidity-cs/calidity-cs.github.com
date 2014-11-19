@@ -36,3 +36,48 @@ span#main {
   right: 0;
   left: 0;
 }
+
+.contact-container{
+  width:15em;
+  height: 7em;
+  background-color: white;
+  z-index: 1;
+  position: absolute;
+  top:0;
+  right:0;
+  bottom:0;
+  left:0;
+  margin: auto;
+  padding: 0.5em 1em;
+  border: 2px solid grey;
+  overflow: hidden;
+  display: none;
+}
+.contact-container form{
+  width:100%;
+}
+
+.contact-container input, textarea{
+  font-size: 0.5em;
+  width:100%;
+  display:block;
+  margin: 5px auto;
+  padding: 0;
+  border: 1px solid gray;
+}
+
+.button{
+  padding: 3px;
+  font-size: 1em !important;
+  background-color: white;
+  border: 0 !important;
+  font-family: penna;
+}
+
+.button:hover{
+  color: red;
+}
+
+.right{
+  float: right;
+}
