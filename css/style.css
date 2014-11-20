@@ -124,3 +124,52 @@ span#main {
 }
 
 #portfolio-container{}
+
+#menu{
+  position: fixed;
+  margin: auto;
+  right: 0px;
+  left: 0px;
+  bottom: 2em;
+  text-align: center;
+}
+
+.letter {
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  cursor: default;
+  position: absolute;
+  font-size: 5em;
+  color: black;
+  font-weight: bold;
+}
+
+.letter:hover {
+  box-shadow: 0px 0px 12px rgba(0,255,255,0.75);
+  border: 1px solid rgba(127,255,255,0.75);
+}
+
+button {
+  color: black;
+  background: transparent;
+  border: 0px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-family: penna;
+  font-size: 1em;
+}
+
+button:active {
+  color: #000000;
+  background-color: rgba(0,255,255,0.75);
+}
+
+button:hover {
+  color: red;
+}
+
+button.hidden {
+  display: none;
+}
