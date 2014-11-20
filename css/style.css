@@ -128,9 +128,10 @@ span#main {
 #menu{
   position: fixed;
   margin: auto;
-  right: 0px;
-  left: 0px;
-  bottom: 2em;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  margin-bottom: 10px;
   text-align: center;
 }
 

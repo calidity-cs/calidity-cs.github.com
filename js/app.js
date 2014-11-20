@@ -5,12 +5,15 @@ model = new Model
 controller.initialize(model, view)
 })
 
-function Controller(){}
+function Controller(){
+  this.showShape = 0;
+}
 
 Controller.prototype = {
   initialize: function(model, view){
     this.model = model
     this.view = view
+    this.playButton = this.view.getPlayButton()
     this.bindListeners()
   },
 
@@ -19,6 +22,8 @@ Controller.prototype = {
     $('#contact-link').on('click', view.containerIn);
     $('#portfolio-link').on('click', view.containerIn);
     $('.close').on('click', view.close);
+    $('#play').on('click', this.animationPicker);
+    $('#done').on('click', this.stopAnimation)
   },
 
   sendMailWrapper: function(e){
@@ -31,6 +36,48 @@ Controller.prototype = {
     else{
       view.dispError("Oops, there was a problem. Please try again.")
     }
+  },
+
+  startAnimation: function(){
+    view.hideMain();
+    view.prepAll();
+    setTimeout(function(){view.animate()},400);
+    view.showDone();
+  },
+
+  animationPicker: function(e){
+    e.preventDefault();
+    if (controller.showShape===0){
+      controller.startAnimation()
+      controller.showShape = 1;
+    }
+    else if (controller.showShape===1){
+      view.transform(view.targets.helix, 4000)
+      controller.showShape = 2
+    }
+    else if (controller.showShape===2){
+      view.transform(view.targets.grid, 4000)
+      controller.showShape = 3
+    }
+    else if (controller.showShape===3){
+      view.transform(view.targets.doubleHelix, 4000)
+      controller.showShape = 4
+    }
+    else {
+      view.transform(view.targets.sphere, 4000)
+      controller.showShape = 1
+    }
+  },
+
+  stopAnimation: function(e){
+    e.preventDefault();
+    view.hideDone()
+    view.transform(view.targets.table, 4000)
+    setTimeout(function(){
+      view.clearContainer()
+      view.showMain()
+    }, 5000)
+    controller.showShape = 0;
   }
 }
 
@@ -66,7 +113,10 @@ Model.prototype = {
 
 }
 
-function View(){}
+function View(){
+    this.targets = { table: [], sphere: [], helix: [], grid: [], doubleHelix: [] };
+    this.objects = []
+}
 
 View.prototype = {
   containerIn: function(e){
@@ -112,11 +162,35 @@ View.prototype = {
     $('#alert-box span').text(text)
   },
 
+  hideMain: function(){
+    $('#main').fadeOut();
+  },
+
+  showMain: function(){
+    $('#main').fadeIn();
+  },
+
+  showDone: function(){
+    document.getElementById( 'done' ).style.display = 'inline';
+  },
+
+  hideDone: function(){
+    document.getElementById( 'done' ).style.display = 'none';
+  },
+
+  getPlayButton: function(){
+    return document.getElementById( 'play' );
+  },
+
+  clearContainer: function(){
+    document.getElementById( 'container' ).innerHTML=''
+  },
+
   prepAll: function() {
     this.camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 0.1, 1000 );
     this.camera.position.z = 5000;
     this.scene = new THREE.Scene();
-    this.targets = { table: [], sphere: [], helix: [], grid: [], doubleHelix: [] };
+    this.renderer = new THREE.CSS3DRenderer();
     this.text = ["A",5,1,
                  "c",7,1,
                  "o",8,1,
@@ -213,38 +287,37 @@ View.prototype = {
     this.prepTable()
     this.prepSphere()
     this.prepHelix()
-    this.prerpDoubleHelix()
+    this.prepDoubleHelix()
     this.prepGrid()
 
-    this.renderer = new THREE.CSS3DRenderer();
     this.renderer.setSize( window.innerWidth, window.innerHeight );
     this.renderer.domElement.style.position = 'absolute';
     document.getElementById( 'container' ).appendChild( this.renderer.domElement );
 
-    controls = new THREE.TrackballControls( camera, this.renderer.domElement );
+    controls = new THREE.TrackballControls( this.camera, this.renderer.domElement );
     controls.rotateSpeed = 0.5;
     controls.minDistance = 500;
     controls.maxDistance = 6000;
-    controls.addEventListener( 'change', render );
+    controls.addEventListener( 'change', this.render );
 
-    this.transform( targets.sphere, 5000 );
+    this.transform( this.targets.sphere, 5000 );
   },
 
   prepTable: function(){
     for ( var i = 0; i < this.text.length; i += 3 ) {
       var letter = document.createElement( 'div' );
       letter.className = 'letter';
-      letter.textContent = this,text[i];
+      letter.textContent = this.text[i];
       var object = new THREE.CSS3DObject( letter );
-      object.position.x = ( text[ i + 1 ] * 140 ) - 2200;
-      object.position.y = - ( text[ i + 2 ] * 180 ) + 750;
+      object.position.x = ( this.text[ i + 1 ] * 140 ) - 2200;
+      object.position.y = - ( this.text[ i + 2 ] * 180 ) + 750;
       this.scene.add( object );
 
       this.objects.push( object );
 
       var object = new THREE.Object3D();
-      object.position.x = ( text[ i + 1 ] * 140 ) - 2200;
-      object.position.y = - ( text[ i + 2 ] * 180 ) + 750;
+      object.position.x = ( this.text[ i + 1 ] * 140 ) - 2200;
+      object.position.y = - ( this.text[ i + 2 ] * 180 ) + 750;
 
       this.targets.table.push( object );
     }
@@ -252,7 +325,7 @@ View.prototype = {
 
   prepSphere: function(){
   var vector = new THREE.Vector3();
-    for ( var i = 0, l = objects.length; i < l; i ++ ) {
+    for ( var i = 0, l = this.objects.length; i < l; i ++ ) {
       var phi = Math.acos( -1 + ( 2 * i ) / l );
       var theta = Math.sqrt( l * Math.PI ) * phi;
       var object = new THREE.Object3D();
@@ -267,7 +340,7 @@ View.prototype = {
 
   prepHelix: function() {
     var vector = new THREE.Vector3();
-    for ( var i = 0, l = objects.length; i < l; i ++ ) {
+    for ( var i = 0, l = this.objects.length; i < l; i ++ ) {
       var phi = i * 0.175 + Math.PI;
       var object = new THREE.Object3D();
       object.position.x = 900 * Math.sin( phi );
@@ -277,13 +350,13 @@ View.prototype = {
       vector.y = object.position.y;
       vector.z = object.position.z * 2;
       object.lookAt( vector );
-      targets.helix.push( object );
+      this.targets.helix.push( object );
     }
   },
 
   prepDoubleHelix: function(){
     var vector = new THREE.Vector3();
-    for ( var i = 0, l = objects.length; i < l; i ++ ) {
+    for ( var i = 0, l = this.objects.length; i < l; i ++ ) {
       if (i%2===1){
         var phi = i * 0.175 + 2*Math.PI;
       }
@@ -298,26 +371,30 @@ View.prototype = {
       vector.y = object.position.y;
       vector.z = object.position.z * 2;
       object.lookAt( vector );
-      targets.doubleHelix.push( object );
+      this.targets.doubleHelix.push( object );
     }
-
+  },
 
   prepGrid: function(){
-    for ( var i = 0; i < objects.length; i ++ ) {
+    for ( var i = 0; i < this.objects.length; i ++ ) {
       var object = new THREE.Object3D();
       object.position.x = ( ( i % 5 ) * 400 ) - 800;
       object.position.y = ( - ( Math.floor( i / 5 ) % 5 ) * 400 ) + 800;
       object.position.z = ( Math.floor( i / 25 ) ) * 1000 - 2000;
-      targets.grid.push( object );
+      this.targets.grid.push( object );
     }
+  },
+
+  render: function(){
+    view.renderer.render( view.scene, view.camera );
   },
 
   transform: function(targets, duration){
     TWEEN.removeAll();
 
-  for ( var i = 0; i < objects.length; i ++ ) {
+  for ( var i = 0; i < this.objects.length; i ++ ) {
 
-    var object = objects[ i ];
+    var object = this.objects[ i ];
     var target = targets[ i ];
 
     new TWEEN.Tween( object.position )
@@ -334,24 +411,20 @@ View.prototype = {
 
   new TWEEN.Tween( this )
     .to( {}, duration * 2 )
-    .onUpdate( render )
+    .onUpdate( this.render )
     .start();
   },
 
   animate: function(){
-    requestAnimationFrame( animate );
+    requestAnimationFrame( view.animate );
     TWEEN.update();
     controls.update();
-  },
-
-  render: function(){
-    this.renderer.render( this.scene, this.camera );
   },
 
   onWindowResize: function(){
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    render();
+    this.renderer.setSize( window.innerWidth, window.innerHeight );
+    this.render();
   },
 }
