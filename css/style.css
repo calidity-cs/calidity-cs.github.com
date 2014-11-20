@@ -16,7 +16,6 @@ body {
 }
 
 a {
-  color: #000000;
   text-decoration: none;
   color: black;
 }
@@ -38,8 +37,22 @@ span#main {
 }
 
 .contact-container{
-  width:15em;
   height: 7em;
+  width:15em;
+}
+
+.portfolio-container{
+  height: 10em;
+  width:80vw;
+  font-size: 0.8em;
+}
+
+.underline{
+  font-family: penna !important;
+  text-decoration: underline;
+}
+
+.container{
   background-color: white;
   z-index: 1;
   position: absolute;
@@ -81,3 +94,33 @@ span#main {
 .right{
   float: right;
 }
+
+#alert-box{
+  position: absolute;
+  top: 0;
+  margin: 0;
+  z-index: 1;
+  width: 92vw;
+  padding: 0.1em 4vw;
+  text-align: center;
+  display: none;
+  color: white;
+}
+
+#alert-box a{
+  color: white;
+}
+
+#alert-box a:hover{
+  color: black;
+}
+
+.error{
+  background-color: darkred;
+}
+
+.okay{
+  background-color: darkgreen;
+}
+
+#portfolio-container{}

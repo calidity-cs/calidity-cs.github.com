@@ -7,6 +7,10 @@
   <link rel="stylesheet" type="text/css" href="css/style.css" media="screen">
 </head>
 <body>
+  <div id="alert-box">
+    <span>Message goes here.</span>
+    <a class="close right" href="#">close</a>
+  </div>
   <span id='main'>
     <h3>A collection of links on</h3>
     <h1>ALEJANDRO E. LOSADA</h1>
@@ -16,8 +20,8 @@
     <a id="portfolio-link" href="#">Portfolio</a> |
     <a id="contact-link" href="#">Contact</a>
   </span>
-  <div id="contact-container" class="contact-container">
-    <a id="close" class="right" href="#">close</a>
+  <div id="contact-container" class="contact-container container">
+    <a class="close right" href="#">close</a>
     <form id="contact-form">
       <input type="text" name="name" id="name" placeholder="name"/>
       <input type="text" name="email" id="email" placeholder="e-mail"/>
@@ -25,7 +29,29 @@
       <input type="submit" class="button" value="Submit" />
     </form>
   </div>
-  <div id="portfolio-container" class="contact"></div>
+  <div id="portfolio-container" class="portfolio-container container">
+    <a class="close right" href="#">close</a>
+    <br>
+    <ul>
+      <li>
+        <a href="http://boot-track.herokuapp.com/">
+          <span class="underline">Boot Track</span>
+        </a>
+        <span>
+          is an application to find DevBootcamp graduates, see what they are up to and get in touch with them. It's a single-page JavaScript front-end cosuming its own RESTful api, along with LinkedIn's, Google map's and Gravatar's apis. Other team members: <a href="www.linkedin.com/in/melissaalvarez1"><span class="underline">Mellissa</span></a>, <a href="www.linkedin.com/in/tiffanytkaiser"><span class="underline">Tiffany</span></a> & <a href="www.linkedin.com/in/jordankamin"><span class="underline">Jordan</span></a>. See the codebase <a href="https://github.com/red-admirals-2014/BootTrack"><span class="underline">here</span></a>.
+        </span>
+      </li>
+      <br>
+      <li>
+        <a href="http://alejandrolosada.net/game-of-life">
+          <span class="underline">Conway's game of life</span>
+        </a>
+        <span>
+          is a pure JavaScript implementation of Conway's game of life model, with a bit of css transitions. See the codebase <a href="https://github.com/alosada/game-of-life"><span class="underline">here</span></a>.
+        </span>
+      </li>
+    </ul>
+  </div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script src="js/three.min.js"></script>
   <script src="js/tween.min.js"></script>
