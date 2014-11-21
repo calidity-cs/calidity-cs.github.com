@@ -1,8 +1,9 @@
 window.addEventListener('load',function(){
 controller = new Controller
 view = new View
-model = new Model
-controller.initialize(model, view)
+mailer = new Mailer
+animation = new Animation
+controller.initialize(mailer, view, animation)
 })
 
 function Controller(){
@@ -10,9 +11,10 @@ function Controller(){
 }
 
 Controller.prototype = {
-  initialize: function(model, view){
-    this.model = model
+  initialize: function(mailer, view, animation){
+    this.mailer = mailer
     this.view = view
+    this.animation = animation
     this.playButton = this.view.getPlayButton()
     this.bindListeners()
   },
@@ -29,7 +31,7 @@ Controller.prototype = {
   sendMailWrapper: function(e){
     e.preventDefault();
     var formData = view.getFormData();
-    if (model.prepMail(formData)){
+    if (mailer.prepMail(formData)){
       view.contactOut()
       view.dispOkay("Message sent successfully")
     }
@@ -40,8 +42,8 @@ Controller.prototype = {
 
   startAnimation: function(){
     view.hideMain();
-    view.prepAll();
-    setTimeout(function(){view.animate()},400);
+    animation.prepAll();
+    setTimeout(function(){animation.animate()},400);
     view.showDone();
   },
 
@@ -52,19 +54,19 @@ Controller.prototype = {
       controller.showShape = 1;
     }
     else if (controller.showShape===1){
-      view.transform(view.targets.helix, 4000)
+      animation.transform(animation.targets.helix, 4000)
       controller.showShape = 2
     }
     else if (controller.showShape===2){
-      view.transform(view.targets.grid, 4000)
+      animation.transform(animation.targets.grid, 4000)
       controller.showShape = 3
     }
     else if (controller.showShape===3){
-      view.transform(view.targets.doubleHelix, 4000)
+      animation.transform(animation.targets.doubleHelix, 4000)
       controller.showShape = 4
     }
     else {
-      view.transform(view.targets.sphere, 4000)
+      animation.transform(animation.targets.sphere, 4000)
       controller.showShape = 1
     }
   },
@@ -72,7 +74,7 @@ Controller.prototype = {
   stopAnimation: function(e){
     e.preventDefault();
     view.hideDone()
-    view.transform(view.targets.table, 4000)
+    animation.transform(animation.targets.table, 4000)
     setTimeout(function(){
       view.clearContainer()
       view.showMain()
@@ -81,13 +83,14 @@ Controller.prototype = {
   }
 }
 
-function Model(){
+
+function Mailer(){
   this.lasllaves = "w0G3bYcspMgrO8ewpZGelA";
   this.address = "https://mandrillapp.com/api/1.0/messages/send.json"
   this.i=0;
 }
 
-Model.prototype = {
+Mailer.prototype = {
   prepMail: function(mail){
     var data = {
       key: this.lasllaves,
@@ -113,79 +116,12 @@ Model.prototype = {
 
 }
 
-function View(){
+function Animation(){
     this.targets = { table: [], sphere: [], helix: [], grid: [], doubleHelix: [] };
     this.objects = []
 }
 
-View.prototype = {
-  containerIn: function(e){
-    e.preventDefault()
-    var prefix = e.target.id.split('-')[0]
-    $("#"+prefix+"-container").fadeIn()
-  },
-
-  contactOut: function(){
-    $("#contact-container").fadeOut()
-  },
-
-  close: function(e){
-    e.preventDefault()
-    var parent = $('#'+e.target.parentElement.id)
-    parent.fadeOut()
-    setTimeout(function(){parent.removeClass('error okay')},1000)
-  },
-
-  getFormData: function(){
-    var formRaw=$('form').serializeArray();
-
-    var formData = {
-      name:formRaw[0].value,
-      from_email:formRaw[1].value,
-      html:"<p>"+formRaw[2].value+"</p>",
-      text:formRaw[2].value,
-      subject:"Nuevo contacto: "+formRaw[1].value,
-      to:[{email:"alosada@gmail.com"}]
-    };
-
-    return formData
-  },
-
-  dispError: function(text){
-    $('#alert-box').addClass("error").fadeIn()
-    $('#alert-box span').text(text)
-
-  },
-
-  dispOkay: function(text){
-    $('#alert-box').addClass("error").fadeIn()
-    $('#alert-box span').text(text)
-  },
-
-  hideMain: function(){
-    $('#main').fadeOut();
-  },
-
-  showMain: function(){
-    $('#main').fadeIn();
-  },
-
-  showDone: function(){
-    document.getElementById( 'done' ).style.display = 'inline';
-  },
-
-  hideDone: function(){
-    document.getElementById( 'done' ).style.display = 'none';
-  },
-
-  getPlayButton: function(){
-    return document.getElementById( 'play' );
-  },
-
-  clearContainer: function(){
-    document.getElementById( 'container' ).innerHTML=''
-  },
-
+Animation.prototype = {
   prepAll: function() {
     this.camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 0.1, 1000 );
     this.camera.position.z = 5000;
@@ -324,18 +260,18 @@ View.prototype = {
   },
 
   prepSphere: function(){
-  var vector = new THREE.Vector3();
-    for ( var i = 0, l = this.objects.length; i < l; i ++ ) {
-      var phi = Math.acos( -1 + ( 2 * i ) / l );
-      var theta = Math.sqrt( l * Math.PI ) * phi;
-      var object = new THREE.Object3D();
-      object.position.x = 800 * Math.cos( theta ) * Math.sin( phi );
-      object.position.y = 800 * Math.sin( theta ) * Math.sin( phi );
-      object.position.z = 800 * Math.cos( phi );
-      vector.copy( object.position ).multiplyScalar( 2 );
-      object.lookAt( vector );
-      this.targets.sphere.push( object );
-    }
+    var vector = new THREE.Vector3();
+      for ( var i = 0, l = this.objects.length; i < l; i ++ ) {
+        var phi = Math.acos( -1 + ( 2 * i ) / l );
+        var theta = Math.sqrt( l * Math.PI ) * phi;
+        var object = new THREE.Object3D();
+        object.position.x = 800 * Math.cos( theta ) * Math.sin( phi );
+        object.position.y = 800 * Math.sin( theta ) * Math.sin( phi );
+        object.position.z = 800 * Math.cos( phi );
+        vector.copy( object.position ).multiplyScalar( 2 );
+        object.lookAt( vector );
+        this.targets.sphere.push( object );
+      }
   },
 
   prepHelix: function() {
@@ -353,7 +289,6 @@ View.prototype = {
       this.targets.helix.push( object );
     }
   },
-
   prepDoubleHelix: function(){
     var vector = new THREE.Vector3();
     for ( var i = 0, l = this.objects.length; i < l; i ++ ) {
@@ -386,37 +321,36 @@ View.prototype = {
   },
 
   render: function(){
-    view.renderer.render( view.scene, view.camera );
+    animation.renderer.render( animation.scene, animation.camera );
   },
 
   transform: function(targets, duration){
     TWEEN.removeAll();
 
-  for ( var i = 0; i < this.objects.length; i ++ ) {
+    for ( var i = 0; i < this.objects.length; i ++ ) {
 
-    var object = this.objects[ i ];
-    var target = targets[ i ];
+      var object = this.objects[ i ];
+      var target = targets[ i ];
 
-    new TWEEN.Tween( object.position )
-      .to( { x: target.position.x, y: target.position.y, z: target.position.z }, Math.random() * duration + duration )
-      .easing( TWEEN.Easing.Exponential.InOut )
+      new TWEEN.Tween( object.position )
+        .to( { x: target.position.x, y: target.position.y, z: target.position.z }, Math.random() * duration + duration )
+        .easing( TWEEN.Easing.Exponential.InOut )
+        .start();
+
+      new TWEEN.Tween( object.rotation )
+        .to( { x: target.rotation.x, y: target.rotation.y, z: target.rotation.z }, Math.random() * duration + duration )
+        .easing( TWEEN.Easing.Exponential.InOut )
+        .start();
+    }
+
+    new TWEEN.Tween( this )
+      .to( {}, duration * 2 )
+      .onUpdate( this.render )
       .start();
-
-    new TWEEN.Tween( object.rotation )
-      .to( { x: target.rotation.x, y: target.rotation.y, z: target.rotation.z }, Math.random() * duration + duration )
-      .easing( TWEEN.Easing.Exponential.InOut )
-      .start();
-
-  }
-
-  new TWEEN.Tween( this )
-    .to( {}, duration * 2 )
-    .onUpdate( this.render )
-    .start();
   },
 
   animate: function(){
-    requestAnimationFrame( view.animate );
+    requestAnimationFrame( animation.animate );
     TWEEN.update();
     controls.update();
   },
@@ -426,5 +360,79 @@ View.prototype = {
     camera.updateProjectionMatrix();
     this.renderer.setSize( window.innerWidth, window.innerHeight );
     this.render();
+  },
+
+}
+
+function View(){
+}
+
+View.prototype = {
+  containerIn: function(e){
+    e.preventDefault()
+    var prefix = e.target.id.split('-')[0]
+    $("#"+prefix+"-container").fadeIn()
+  },
+
+  contactOut: function(){
+    $("#contact-container").fadeOut()
+  },
+
+  close: function(e){
+    e.preventDefault()
+    var parent = $('#'+e.target.parentElement.id)
+    parent.fadeOut()
+    setTimeout(function(){parent.removeClass('error okay')},1000)
+  },
+
+  getFormData: function(){
+    var formRaw=$('form').serializeArray();
+
+    var formData = {
+      name:formRaw[0].value,
+      from_email:formRaw[1].value,
+      html:"<p>"+formRaw[2].value+"</p>",
+      text:formRaw[2].value,
+      subject:"Nuevo contacto: "+formRaw[1].value,
+      to:[{email:"alosada@gmail.com"}]
+    };
+
+    return formData
+  },
+
+  dispError: function(text){
+    $('#alert-box').addClass("error").fadeIn()
+    $('#alert-box span').text(text)
+
+  },
+
+  dispOkay: function(text){
+    $('#alert-box').addClass("error").fadeIn()
+    $('#alert-box span').text(text)
+  },
+
+  hideMain: function(){
+    $('#main').fadeOut();
+  },
+
+  showMain: function(){
+    $('#main').fadeIn();
+  },
+
+  showDone: function(){
+    document.getElementById( 'done' ).style.display = 'inline';
+  },
+
+  hideDone: function(){
+    document.getElementById( 'done' ).style.display = 'none';
+
+  },
+
+  getPlayButton: function(){
+    return document.getElementById( 'play' );
+  },
+
+  clearContainer: function(){
+    document.getElementById( 'container' ).innerHTML=''
   },
 }
