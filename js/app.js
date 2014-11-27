@@ -4,6 +4,7 @@ view = new View
 mailer = new Mailer
 animation = new Animation
 controller.initialize(mailer, view, animation)
+view.setBlinker()
 })
 
 function Controller(){
@@ -41,6 +42,7 @@ Controller.prototype = {
   },
 
   startAnimation: function(){
+    clearInterval(view.blinker);
     view.hideMain();
     animation.prepAll();
     setTimeout(function(){animation.animate()},400);
@@ -113,7 +115,6 @@ Mailer.prototype = {
       }
     })
   },
-
 }
 
 function Animation(){
@@ -435,4 +436,16 @@ View.prototype = {
   clearContainer: function(){
     document.getElementById( 'container' ).innerHTML=''
   },
+
+  toggler: function(){
+    var playButton = $('#play')
+      if(playButton.hasClass('red')){playButton.removeClass('red')}
+      else{playButton.addClass('red')}
+  },
+
+  setBlinker: function(){
+    setTimeout(function(){
+      view.blinker = setInterval(function(){view.toggler()},1000)
+    },10000)
+  }
 }

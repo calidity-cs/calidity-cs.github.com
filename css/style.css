@@ -131,8 +131,9 @@ span#main {
   right: 0;
   left: 0;
   bottom: 0;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   text-align: center;
+  background-color: white;
 }
 
 .letter {
@@ -173,4 +174,8 @@ button:hover {
 
 button.hidden {
   display: none;
+}
+
+.red{
+  color: red;
 }
