@@ -163,7 +163,7 @@ View.prototype = {
       targets.helix.push( object );
     }
 
-  // doubleHelix
+    // doubleHelix
     var vector = new THREE.Vector3();
     for ( var i = 0, l = objects.length; i < l; i ++ ) {
       if (i%2===1){
